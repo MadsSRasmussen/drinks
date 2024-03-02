@@ -22,6 +22,8 @@
     flex-direction: column;
     align-items: center;
     padding: 25px;
+    max-height: calc(100vh - 125px);
+    overflow: auto;
 }
 </style>
 

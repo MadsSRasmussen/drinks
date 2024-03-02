@@ -1,5 +1,8 @@
 <template>
     <div class="gamesContainer">
+        <button @click="addGame" class="primaryAction addGameBtn">
+            New game
+        </button>
         <div
             v-for="game in games"
             class="gamesPillContainer"
@@ -17,7 +20,7 @@
                 Status: {{ game.status }}
             </div>
         </div>
-        <button @click="addGame">Add game</button>
+        <button @click="loadMoreGames">Show 5 more</button>
     </div>
 </template>
 
@@ -29,13 +32,30 @@ import { getGames, createEmptyGame } from "../../firebase.js";
 const router = useRouter();
 
 const games = ref(null);
+let lastViewed = null;
 
 getGames().then((data) => {
-    games.value = data;
+    games.value = data[0];
+    lastViewed = data[1];
+
+    console.log(lastViewed);
 });
 
 function editGame(gid) {
     router.push("/dev/games/" + gid);
+}
+
+function loadMoreGames() {
+    getGames(lastViewed).then((data) => {
+        const returnedGames = data[0];
+        returnedGames.forEach((game) => {
+            games.value.push(game);
+        });
+
+        lastViewed = data[1];
+
+        console.log(games.value);
+    });
 }
 
 function addGame() {
@@ -51,6 +71,12 @@ function addGame() {
 </script>
 
 <style scoped>
+.addGameBtn {
+    border: none;
+    width: 50px;
+    float: right;
+}
+
 .gamesPillContainer {
     border: 2px solid var(--accent-color-main);
     box-sizing: border-box;
