@@ -1,41 +1,38 @@
 <template>
     <div class="cardsContainer">
-        <div v-for="card in cards" class="cardPillContainer" @click="$emit('edit-card', card.index, card)">
-            <div class="pillContent indexContent">{{ card.index+1 }}</div>
+        <div
+            v-for="card in cards"
+            class="cardPillContainer"
+            @click="$emit('edit-card', card.index, card)"
+        >
+            <div class="pillContent indexContent">{{ card.index + 1 }}</div>
             <div class="pillTextContentContainer">
-                <div class="pillContent titleContent">Title: {{ card.title }}</div>
-                <div class="pillContent contentContent">Content: {{ card.content }}</div>
+                <div class="pillContent titleContent">
+                    Title: {{ card.title }}
+                </div>
+                <div class="pillContent contentContent">
+                    Content: {{ card.content }}
+                </div>
             </div>
         </div>
-        <button @click="$emit('create-card', cards ? cards.length : 0)">Add Card</button>
+        <button @click="$emit('create-card', cards ? cards.length : 0)">
+            Add Card
+        </button>
     </div>
-    
-
 </template>
 <script setup>
-import { ref } from 'vue';
-import { getCardsForGame } from '../firebase.js';
+import { ref } from "vue";
+import { getCardsForGame } from "../../firebase.js";
 
-import { useRoute } from 'vue-router'
+import { useRoute } from "vue-router";
 
-const emit = defineEmits(['create-card', 'edit-card']);
+const emit = defineEmits(["create-card", "edit-card"]);
 
 const route = useRoute();
 
 const cards = ref([]);
 
-
 getCardsForGame(route.params.id)
-.then((cardsResult) => {
-    cards.value = cardsResult.sort((a, b) => a.index - b.index);
-})
-.catch((error) => {
-    console.log(error);
-});
-
-const update = () => {
-
-    getCardsForGame(route.params.id)
     .then((cardsResult) => {
         cards.value = cardsResult.sort((a, b) => a.index - b.index);
     })
@@ -43,13 +40,20 @@ const update = () => {
         console.log(error);
     });
 
-}
+const update = () => {
+    getCardsForGame(route.params.id)
+        .then((cardsResult) => {
+            cards.value = cardsResult.sort((a, b) => a.index - b.index);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};
 
-defineExpose({update});
-
+defineExpose({ update });
 </script>
 <style scoped>
-.pillTextContentContainer{
+.pillTextContentContainer {
     display: flex;
     width: 100%;
 }
@@ -68,7 +72,7 @@ defineExpose({update});
     align-items: center;
 }
 
-.cardPillContainer:hover{
+.cardPillContainer:hover {
     background-color: var(--accent-color-main);
 }
 
@@ -84,7 +88,7 @@ defineExpose({update});
     width: 40%;
 }
 
-.cardsContainer{
+.cardsContainer {
     display: flex;
     flex-direction: column;
     width: 100%;

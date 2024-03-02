@@ -2,10 +2,15 @@
     <div class="background">
         <Navbar current-path="/dev/users" />
         <div class="usersContent">
-            <UsersList ref="usersList" @edit-user="editUser"/>
+            <UsersList ref="usersList" @edit-user="editUser" />
         </div>
     </div>
-    <EditUser v-if="showUserEdit" :show="showUserEdit" :user="editingUser" @user-updated="handleUserUpdated"/>
+    <EditUser
+        v-if="showUserEdit"
+        :show="showUserEdit"
+        :user="editingUser"
+        @user-updated="handleUserUpdated"
+    />
 </template>
 
 <style scoped>
@@ -13,13 +18,13 @@
     display: flex;
     justify-content: center;
 }
-.background{
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  background-color: var(--background-color-main);
+.background {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-color-main);
 }
 
 .usersContent {
@@ -30,13 +35,13 @@
 </style>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 
-import { Users } from '../firebase.js';
+import { Users } from "../firebase.js";
 
-import Navbar from '@/components/Navbar.vue';
-import UsersList from '@/components/UsersList.vue';
-import EditUser from '@/components/EditUser.vue';
+import Navbar from "@/components/Navbar.vue";
+import UsersList from "@/components/lists/UsersList.vue";
+import EditUser from "@/components/popups/EditUser.vue";
 
 const editingUser = ref(null);
 const showUserEdit = ref(false);
@@ -59,5 +64,4 @@ function handleUserUpdated(uid) {
     showUserEdit.value = false;
     usersList.value.update();
 }
-
 </script>

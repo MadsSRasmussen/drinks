@@ -2,18 +2,43 @@
     <Transition>
         <div v-if="props.show" class="backdrop">
             <div class="container" @keyup.enter="createUser">
-                <input type="text" class="titleInput" placeholder="Title..." v-model="title">
-                <div class="imageContainer">
-                    Image not available
-                </div>
+                <input
+                    type="text"
+                    class="titleInput"
+                    placeholder="Title..."
+                    v-model="title"
+                />
+                <div class="imageContainer">Image not available</div>
 
-                <h4 style="margin-bottom: 5px;">Content:</h4>
-                <textarea type="text" class="textInput editorTextarea" v-model="content"></textarea>
+                <h4 style="margin-bottom: 5px">Content:</h4>
+                <textarea
+                    type="text"
+                    class="textInput editorTextarea"
+                    v-model="content"
+                ></textarea>
                 <div class="cardEditButtonsContainer">
-                    <button v-if="!props.newCard" @click="deleteCardHandler" class="deleteButton">Delete</button>
+                    <button
+                        v-if="!props.newCard"
+                        @click="deleteCardHandler"
+                        class="deleteButton"
+                    >
+                        Delete
+                    </button>
                     <button @click="cancel">Cancel</button>
-                    <button v-if="props.newCard" @click="createCardHandler" class="primaryAction">Create</button>
-                    <button v-else @click="updateCardHandler" class="primaryAction">Save</button>
+                    <button
+                        v-if="props.newCard"
+                        @click="createCardHandler"
+                        class="primaryAction"
+                    >
+                        Create
+                    </button>
+                    <button
+                        v-else
+                        @click="updateCardHandler"
+                        class="primaryAction"
+                    >
+                        Save
+                    </button>
                 </div>
             </div>
         </div>
@@ -21,13 +46,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 
-import { createCard, updateCard, deleteCard } from '../firebase.js';
+import { createCard, updateCard, deleteCard } from "../../firebase.js";
 
-const emit = defineEmits(['created-card', 'cancel-edit', 'deleted-card', 'updated-card']);
+const emit = defineEmits([
+    "created-card",
+    "cancel-edit",
+    "deleted-card",
+    "updated-card",
+]);
 
-const props = defineProps ({
+const props = defineProps({
     show: Boolean,
     newCard: Boolean,
     gameId: String,
@@ -39,60 +69,55 @@ const title = ref(props.card ? props.card.title : null);
 const content = ref(props.card ? props.card.content : null);
 
 function createCardHandler() {
-
     const cardObject = {
         title: title.value,
         content: content.value,
         game: props.gameId,
-        index: props.index
-    }
+        index: props.index,
+    };
 
     createCard(cardObject)
-    .then((result) => {
-        emit('created-card');
-    })
-    .catch((error) => {
-        console.log(error);
-    });
-
+        .then((result) => {
+            emit("created-card");
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 }
 
 function updateCardHandler() {
-
     const updateObject = {
         title: title.value,
         content: content.value,
         index: props.index,
-    }
+    };
 
     const cid = props.card.id;
 
     updateCard(cid, updateObject)
-    .then(() => {
-        emit('updated-card');
-    })
-    .catch((error) => {
-        console.error(error);
-    })
-
+        .then(() => {
+            emit("updated-card");
+        })
+        .catch((error) => {
+            console.error(error);
+        });
 }
 
 function deleteCardHandler() {
-    console.log("Delete!")
+    console.log("Delete!");
     deleteCard(props.card.id)
-    .then(() => {
-        emit('deleted-card');
-    })
-    .catch((error) => {
-        console.log(error);
-    }) 
+        .then(() => {
+            emit("deleted-card");
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 }
 
 function cancel() {
     console.log("cancel!");
-    emit('cancel-edit');
+    emit("cancel-edit");
 }
-
 </script>
 
 <style scoped>
@@ -103,7 +128,7 @@ function cancel() {
 .deleteButton:hover {
     background-color: var(--background-color-alternate-hover);
 }
-.editorTextarea{
+.editorTextarea {
     width: 90%;
     height: 100px;
     margin: 10px 50px;
@@ -119,7 +144,7 @@ function cancel() {
     margin: 25px;
 }
 
-.titleInput:focus{
+.titleInput:focus {
     outline: none;
 }
 .cardEditButtonsContainer {
@@ -141,7 +166,7 @@ function cancel() {
     left: 0px;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(5px);
     z-index: 1;
     display: flex;
