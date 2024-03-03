@@ -20,7 +20,8 @@
                 Status: {{ game.status }}
             </div>
         </div>
-        <button @click="loadMoreGames">Show 5 more</button>
+        <button v-if="!loadedAll" @click="loadMoreGames">Show 5 more</button>
+        <div v-else class="loadedAllInfoField">All games already loaded...</div>
     </div>
 </template>
 
@@ -34,11 +35,11 @@ const router = useRouter();
 const games = ref(null);
 let lastViewed = null;
 
+const loadedAll = ref(false);
+
 getGames().then((data) => {
     games.value = data[0];
     lastViewed = data[1];
-
-    console.log(lastViewed);
 });
 
 function editGame(gid) {
@@ -54,7 +55,9 @@ function loadMoreGames() {
 
         lastViewed = data[1];
 
-        console.log(games.value);
+        if (!lastViewed) {
+            loadedAll.value = true;
+        }
     });
 }
 

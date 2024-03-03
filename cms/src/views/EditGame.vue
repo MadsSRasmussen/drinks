@@ -185,6 +185,8 @@ function updateGameCategory() {
 }
 .editContent {
     padding: 25px;
+    max-height: calc(100vh - 125px);
+    overflow: auto;
 }
 .background {
     position: fixed;

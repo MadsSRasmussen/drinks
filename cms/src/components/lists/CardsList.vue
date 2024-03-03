@@ -95,6 +95,7 @@ defineExpose({ update });
 }
 .indexContent {
     width: 25px;
+    min-width: 25px;
     box-sizing: border-box;
 }
 </style>
