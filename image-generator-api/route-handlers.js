@@ -7,7 +7,11 @@ import {
   getCard,
 } from "./firebase.js";
 import { summariazeGameFromCards } from "./openai.js";
-import { generateImagePromt, generateAndUploadBuffer } from "./helpers.js";
+import {
+  generateImagePromt,
+  generateImagePromtAlt,
+  generateAndUploadBuffer,
+} from "./helpers.js";
 import { queue } from "./index.js";
 import { Job } from "./job.js";
 
@@ -49,9 +53,18 @@ export async function generateGameHandler(req, res) {
           // Get AI-generated summary of the game...
           const summary = await summariazeGameFromCards(cards);
 
-          const promts = [];
+          const contextPromts = [];
           cards.forEach((card) => {
-            promts.push(generateImagePromt(req.body["style"], card, summary));
+            contextPromts.push(
+              generateImagePromt(req.body["style"], card, summary),
+            );
+          });
+
+          const noContextPromts = [];
+          cards.forEach((card) => {
+            noContextPromts.push(
+              generateImagePromtAlt(req.body["style"], card),
+            );
           });
 
           // Generate and upload images in batches of ??...
@@ -59,8 +72,10 @@ export async function generateGameHandler(req, res) {
             const card = cards[i];
             const path = "card-images/" + card.game + "/" + card.id;
 
-            await generateAndUploadBuffer(card, promts[i], path);
-            await generateAndUploadBuffer(card, promts[i], path);
+            await generateAndUploadBuffer(card, contextPromts[i], path);
+            await generateAndUploadBuffer(card, contextPromts[i], path);
+            await generateAndUploadBuffer(card, noContextPromts[i], path);
+            await generateAndUploadBuffer(card, noContextPromts[i], path);
           }
 
           resolve();
@@ -138,10 +153,12 @@ export async function generateImagesForCard(req, res) {
           const summary = await summariazeGameFromCards(cards);
 
           const promt = generateImagePromt(req.body["style"], card, summary);
+          const promtAlt = generateImagePromtAlt(req.body["style"], card);
 
-          const path = "webp_test/" + card.game + "/" + card.id;
+          const path = "card-images/" + card.game + "/" + card.id;
 
           const snapshot = await generateAndUploadBuffer(card, promt, path);
+          await generateAndUploadBuffer(card, promtAlt, path);
 
           resolve(snapshot);
         } catch (error) {

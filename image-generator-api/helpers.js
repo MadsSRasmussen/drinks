@@ -3,18 +3,46 @@ import { uploadBlob, updateCard } from "./firebase.js";
 import { v4 as uuid } from "uuid";
 import sharp from "sharp";
 
-export function generateImagePromt(style, card, summary) {
+export function generateImagePromt(style, card, summary = "") {
+  let returnString = "";
+
   const styleBit = "Create an image in the following style: \n" + style + "\n";
+  returnString += styleBit;
+
   const contentBit =
     "The actual scene you must depict is of people playing a game, SPECIFICALLY DOING THE FOLLOWING: \n" +
     card.title +
     ": " +
     card.content +
     "\n";
-  const contextBit =
-    "Whilst loosley keeping in mind the overall goal of the game: \n" + summary;
+  returnString += contentBit;
 
-  return styleBit + contentBit + contextBit;
+  if (summary) {
+    const contextBit =
+      "Whilst loosley keeping in mind the overall goal of the game: \n" +
+      summary;
+    returnString += contextBit;
+  }
+
+  return returnString;
+}
+
+// A more creative interpretation of the instruction!
+export function generateImagePromtAlt(style, card) {
+  let returnString = "";
+
+  const styleBit = "Create an image in the following style: \n" + style + "\n";
+  returnString += styleBit;
+
+  const contentBit =
+    "Creatively interpret the following in the image: \n" +
+    card.title +
+    ": " +
+    card.content;
+
+  returnString += contentBit;
+
+  return returnString;
 }
 
 // Generates an image, fetches the generated image and uploads it to cloud storage
