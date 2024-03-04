@@ -26,6 +26,8 @@ import {
   startAfter,
 } from "firebase/firestore";
 
+import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
+
 const firebaseConfig = {
   apiKey: "AIzaSyBCqRUVPx-eLAyLeb-5duJJBmqxrzNME4o",
   authDomain: "drinks-fbc53.firebaseapp.com",
@@ -42,6 +44,8 @@ const analytics = getAnalytics(app);
 
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+const storage = getStorage();
 
 // Retrieves a single game in 'games' collection
 export function getGame(gid) {
@@ -62,6 +66,39 @@ export function getGame(gid) {
     } catch (error) {
       reject(error);
     }
+  });
+}
+
+// Returns downloadURL for image
+export function getImageDownloadURL(path) {
+  return new Promise((resolve, reject) => {
+    getDownloadURL(ref(storage, path))
+      .then((url) => {
+        resolve(url);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+// Fetches all files in directory given with path
+export function listAllFiles(path) {
+  return new Promise((resolve, reject) => {
+    const listRef = ref(storage, path);
+
+    listAll(listRef)
+      .then((res) => {
+        const locations = [];
+
+        res.items.forEach((item) => {
+          locations.push(item._location.path);
+        });
+        resolve(locations);
+      })
+      .catch((error) => {
+        reject(error);
+      });
   });
 }
 

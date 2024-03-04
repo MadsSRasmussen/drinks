@@ -8,7 +8,27 @@
                     placeholder="Title..."
                     v-model="title"
                 />
-                <div class="imageContainer">Image not available</div>
+                <div class="imageContainer">
+                    <div class="innerImageContainer" v-if="imageUrl">
+                        <img class="image" :src="imageUrl" />
+                    </div>
+                    <div v-else>Image not available</div>
+                </div>
+
+                <select
+                    @change="updateSelectedImage"
+                    v-if="imageUrl"
+                    v-model="imageAdress"
+                    id="imageSelect"
+                >
+                    <option
+                        v-for="image in imagesInDirectory"
+                        :value="image"
+                        selected="image == props.cards.image"
+                    >
+                        {{ image.slice(image.lastIndexOf("/") + 1) }}
+                    </option>
+                </select>
 
                 <h4 style="margin-bottom: 5px">Content:</h4>
                 <textarea
@@ -48,7 +68,13 @@
 <script setup>
 import { ref } from "vue";
 
-import { createCard, updateCard, deleteCard } from "../../firebase.js";
+import {
+    createCard,
+    updateCard,
+    deleteCard,
+    getImageDownloadURL,
+    listAllFiles,
+} from "../../firebase.js";
 
 const emit = defineEmits([
     "created-card",
@@ -65,8 +91,54 @@ const props = defineProps({
     index: Number,
 });
 
+console.log("Props.card.image: ", props.card.image);
+
 const title = ref(props.card ? props.card.title : null);
 const content = ref(props.card ? props.card.content : null);
+
+const imageAdress = ref("");
+
+const imageUrl = ref(null);
+const imagesInDirectory = ref(null);
+
+if (props.card ? props.card.image : false) {
+    imageAdress.value = props.card.image;
+    setDownloadUrl(props.card.image);
+
+    const directoryPath = props.card.image.substring(
+        0,
+        props.card.image.lastIndexOf("/"),
+    );
+
+    updateSelectElement(directoryPath);
+}
+
+function setDownloadUrl(path) {
+    getImageDownloadURL(path)
+        .then((value) => {
+            imageUrl.value = value;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
+
+function updateSelectElement(path) {
+    listAllFiles(path)
+        .then((files) => {
+            imagesInDirectory.value = files;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
+
+function updateSelectedImage() {
+    const selectElement = document.getElementById("imageSelect");
+
+    props.card.image = selectElement.value;
+    setDownloadUrl(selectElement.value);
+}
 
 function createCardHandler() {
     const cardObject = {
@@ -91,6 +163,10 @@ function updateCardHandler() {
         content: content.value,
         index: props.index,
     };
+
+    if (props.card) {
+        updateObject["image"] = props.card.image ? props.card.image : "";
+    }
 
     const cid = props.card.id;
 
@@ -121,6 +197,20 @@ function cancel() {
 </script>
 
 <style scoped>
+.innerImageContainer {
+    height: 300px;
+}
+#imageSelect {
+    margin: 10px 0px;
+    height: 40px;
+    border: 2px solid black;
+    border-radius: 8px;
+}
+.image {
+    width: 100%;
+    height: 100%;
+}
+
 .deleteButton {
     background-color: var(--warning-color);
 }
@@ -130,7 +220,7 @@ function cancel() {
 }
 .editorTextarea {
     width: 90%;
-    height: 100px;
+    height: 76px;
     margin: 10px 50px;
     resize: none;
     font-family: var(--font-family);
@@ -181,7 +271,7 @@ function cancel() {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 650px;
+    height: fit-content;
     width: 530px;
     box-shadow: 10px 10px;
     text-align: center;
