@@ -4,7 +4,8 @@
   "description": "An api used by the drinks app to generate instructions with dalle-e 3",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "Mads Rasmussen",
   "license": "ISC",
