@@ -2,4 +2,4 @@
 
 The project presents users with instructions for drinking-games. These are managed in a cms-system and generated with AI via the api.
 
-A third change, that is authenticated!
+A final change, that is authenticated!
