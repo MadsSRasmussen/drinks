@@ -3,21 +3,42 @@
         <button @click="addGame" class="primaryAction addGameBtn">
             New game
         </button>
-        <div
-            v-for="game in games"
-            class="gamesPillContainer"
-            :class="game.status == 'processing' ? 'unstablePill' : ''"
-            @click="editGame(game.id)"
-        >
-            <div class="pillContent titleContent">Title: {{ game.name }}</div>
-            <div class="pillContent categoryContent">
-                Category: {{ game.category }}
+        <div v-for="game in games" class="gamesPillContainer">
+            <div
+                v-if="game.status != 'stable'"
+                class="gamePill gamePillInvalid"
+            >
+                <div class="pillContent titleContent">
+                    Title: {{ game.name }}
+                </div>
+                <div class="pillContent categoryContent">
+                    Category: {{ game.category }}
+                </div>
+                <div class="pillContent imageContent">
+                    Logo Image: {{ game.image ? game.image : "N/A" }}
+                </div>
+                <div class="pillContent statusContent">
+                    Status: {{ game.status }}
+                </div>
             </div>
-            <div class="pillContent imageContent">
-                Logo Image: {{ game.image ? game.image : "N/A" }}
-            </div>
-            <div class="pillContent statusContent">
-                Status: {{ game.status }}
+
+            <div
+                @click="editGame(game.id)"
+                v-else
+                class="gamePill gamePillValid"
+            >
+                <div class="pillContent titleContent">
+                    Title: {{ game.name }}
+                </div>
+                <div class="pillContent categoryContent">
+                    Category: {{ game.category }}
+                </div>
+                <div class="pillContent imageContent">
+                    Logo Image: {{ game.image ? game.image : "N/A" }}
+                </div>
+                <div class="pillContent statusContent">
+                    Status: {{ game.status }}
+                </div>
             </div>
         </div>
         <button v-if="!loadedAll" @click="loadMoreGames">Show 5 more</button>
@@ -80,28 +101,36 @@ function addGame() {
     float: right;
 }
 
-.gamesPillContainer {
-    border: 2px solid var(--accent-color-main);
-    box-sizing: border-box;
+.gamePill {
+    height: 50px;
     border-radius: 8px;
     padding: 8px 24px;
-    height: 50px;
-    width: 100%;
-    background-color: var(--background-color-alternate);
-    cursor: pointer;
-    display: flex;
+    display: grid;
     align-items: center;
-    margin: 8px 0px;
-    transition: 400ms;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
-.gamesPillContainer:hover {
+.gamePillValid {
+    background-color: var(--background-color-alternate);
+    cursor: pointer;
+    border: 2px solid var(--accent-color-main);
+}
+
+.gamePillInvalid {
+    cursor: not-allowed;
+    border: 2px solid black;
+}
+
+.gamePillValid:hover {
     background-color: var(--accent-color-main);
+}
+
+.gamesPillContainer {
+    margin: 4px 0px;
 }
 
 .pillContent {
     box-sizing: border-box;
-    width: 25%;
 }
 
 .unstablePill {
