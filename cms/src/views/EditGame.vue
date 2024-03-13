@@ -17,15 +17,18 @@
                         v-model="gameCategory"
                         class="gameSelect"
                     >
-                        <option value="outdoor">Outdoor</option>
+                        <option value="cups">Cups</option>
                         <option value="cards">Cards</option>
-                        <option value="nude">Nude</option>
                         <option value="dice">Dice</option>
+                        <option value="music">Music</option>
+                        <option value="nude">Nude</option>
+                        <option value="outdoor">Outdoor</option>
                     </select>
                     <button class="btn">Edit image</button>
                     <button @click="showCardDelete = true" class="btn danger">
                         Delete game
                     </button>
+                    <button class="btn idBtn" @click="saveId">id</button>
                 </div>
             </div>
             <CardsList
@@ -138,9 +141,27 @@ function updateGameCategory() {
             console.error(error);
         });
 }
+
+function saveId() {
+    if (game) {
+        navigator.clipboard
+            .writeText(game.value.id)
+            .then(() => {
+                alert(
+                    "Game id: ".concat(game.value.id, " copied to clipboard"),
+                );
+            })
+            .catch((error) => {
+                alert("Unable to copy id: ".concat(error));
+            });
+    }
+}
 </script>
 
 <style scoped>
+.idBtn {
+    min-width: 60px;
+}
 .rightSideInputs {
     align-items: center;
 }
