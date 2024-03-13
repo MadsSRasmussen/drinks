@@ -91,8 +91,6 @@ const props = defineProps({
     index: Number,
 });
 
-console.log("Props.card.image: ", props.card.image);
-
 const title = ref(props.card ? props.card.title : null);
 const content = ref(props.card ? props.card.content : null);
 
